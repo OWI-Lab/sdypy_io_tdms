@@ -1,7 +1,7 @@
 import os
 import warnings
 
-from datetime import datetime
+import numpy as np
 from nptdms import TdmsFile
 
 
@@ -44,7 +44,6 @@ def read_tdms(path):
     for group in groups:
         channels = tdms_file[group.name].channels()
         for channel in channels:
-
             signal = {}
             signal['group'] = group
             signal['name'] = str(channel).split("/")[2][1:-2]
@@ -55,14 +54,7 @@ def read_tdms(path):
             signal['unit_str'] = unit_str
             signal['data'] = tdms_file[group.name][channel.name].data
             signal['fs'] = 1 / channel.properties["wf_increment"]
-
-            if "DateTime" in tdms_file.properties:
-                timestamp = datetime(tdms_file.properties["DateTime"], utc=True)
-            else:
-                timestamp = None
-
-            signal['start_timestamp'] = timestamp
-
-            signals.append(signals)
+            signal['start_timestamp'] = np.datetime_as_string(channel.properties["wf_start_time"], unit='s')
+            signals.append(signal)
 
     return signals
