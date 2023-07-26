@@ -5,9 +5,13 @@ from sdypy_sep005.sep005 import assert_sep005
 
 from sdypy_io_tdms.tdms import read_tdms
 
+current_dir = os.path.dirname(os.path.abspath(__file__))
+static_dir = os.path.join(current_dir, 'static')
+
 # With respect to project root (where pytest is run)
-GOOD_TDMS_FILES = os.listdir(os.path.join(os.path.dirname(__file__), 'static', 'good'))
-BAD_TDMS_FILES = os.listdir(os.path.join(os.path.dirname(__file__), 'static', 'bad'))
+GOOD_TDMS_FILES = os.listdir(os.path.join(static_dir, 'good'))
+BAD_TDMS_FILES = os.listdir(os.path.join(static_dir, 'bad'))
+print(GOOD_TDMS_FILES)
 
 
 @pytest.mark.parametrize("filename", GOOD_TDMS_FILES)
@@ -31,7 +35,7 @@ def test_content(filename):
             ]
         }
     }
-    file_path = os.path.join(os.path.join(os.path.dirname(__file__), 'static', 'good'), filename)
+    file_path = os.path.join('.', 'static', 'good', filename)
     signals = read_tdms(file_path)
     print(file_path)
     assert len(signals) != 0  # Not an empty response
@@ -51,7 +55,7 @@ def test_content(filename):
 
 @pytest.mark.parametrize("filename", GOOD_TDMS_FILES)
 def test_compliance_sep005(filename):
-    file_path = os.path.join(os.path.join(os.path.dirname(__file__), 'static', 'good'), filename)
+    file_path = os.path.join('.', 'static', 'good', filename)
     signals = read_tdms(file_path)  # should already not crash here
 
     assert len(signals) != 0  # Not an empty response
@@ -67,7 +71,7 @@ def test_import_faulty_tdms(filename):
     """
     import os.path
 
-    file_path = os.path.join(os.path.join(os.path.dirname(__file__), 'static', 'bad'), filename)
+    file_path = os.path.join('.', 'static', 'bad', filename)
     with pytest.warns(UserWarning, match=filename):
         signals = read_tdms(file_path)
 
