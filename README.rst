@@ -8,6 +8,7 @@ Using the package
 ------------------
 
     .. code-block:: python
+
         from sdypy_io_tdms import read_tdms
 
         file_path = # Path to the tdms file of interest
