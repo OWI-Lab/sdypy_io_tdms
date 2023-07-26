@@ -1,5 +1,6 @@
 import os
 import re
+
 from setuptools import setup
 
 base_path = os.path.dirname(__file__)
@@ -48,7 +49,7 @@ if __name__ == '__main__':
         maintainer='Wout Weijtjens',
         maintainer_email='wout.weijtjens@vub.be',
         install_requires=requirements,
-        keywords=['io','tdms','SEP5'],
+        keywords=['io', 'tdms', 'SEP5'],
         packages=['sdypy_io_tdms'],
         classifiers=['Development Status :: 3 - Alpha',
                      'Intended Audience :: Developers',

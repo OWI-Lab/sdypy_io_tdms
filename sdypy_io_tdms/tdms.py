@@ -23,14 +23,14 @@ def read_tdms(path):
 
     try:
         tdms_file = TdmsFile(path)
-    except FileNotFoundError as fnf_error:
+    except FileNotFoundError:
         warnings.warn(
             f"FAILED IMPORT: No TDMS file at: {path}",
             UserWarning
         )
         signals = []
         return signals
-    except ValueError as val_error:
+    except ValueError:
         warnings.warn(
             f"FAILED IMPORT: TDMS file at: {path} seems corrupted. Failed to import.",
             UserWarning
@@ -54,7 +54,10 @@ def read_tdms(path):
             signal['unit_str'] = unit_str
             signal['data'] = tdms_file[group.name][channel.name].data
             signal['fs'] = 1 / channel.properties["wf_increment"]
-            signal['start_timestamp'] = np.datetime_as_string(channel.properties["wf_start_time"], unit='s')
+            signal['start_timestamp'] = np.datetime_as_string(
+                channel.properties["wf_start_time"],
+                unit='s'
+            )
             signals.append(signal)
 
     return signals

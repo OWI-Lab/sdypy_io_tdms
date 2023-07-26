@@ -14,7 +14,10 @@ BAD_TDMS_FILES = os.listdir(os.path.join(static_dir, 'bad'))
 
 @pytest.mark.parametrize("filename", GOOD_TDMS_FILES)
 def test_content(filename):
-    TEST_FILE_PROP = {
+    """
+    Use test files to assert the correct data is being loaded from the tdms file
+    """
+    test_file_prop = {
         'good_tdms_1.tdms': {
             'no_channels': 8,
             'total_sum': -15.59784792,  # Sum of all values inside the channels
@@ -36,22 +39,25 @@ def test_content(filename):
     file_path = os.path.join(static_dir, 'good', filename)
     signals = read_tdms(file_path)
     assert len(signals) != 0  # Not an empty response
-    assert len(signals) == TEST_FILE_PROP[filename]['no_channels']
+    assert len(signals) == test_file_prop[filename]['no_channels']
 
     tot_sum = 0
-    for s, s_name in zip(signals, TEST_FILE_PROP[filename]['channel_names']):
-        assert s['name'] == s_name
-        assert s['unit_str'] == TEST_FILE_PROP[filename]['unit_str']
-        assert len(s['data']) == TEST_FILE_PROP[filename]['length']
-        assert s['fs'] == pytest.approx(TEST_FILE_PROP[filename]['fs'])
-        tot_sum += sum(s['data'])
+    for signal, s_name in zip(signals, test_file_prop[filename]['channel_names']):
+        assert signal['name'] == s_name
+        assert signal['unit_str'] == test_file_prop[filename]['unit_str']
+        assert len(signal['data']) == test_file_prop[filename]['length']
+        assert signal['fs'] == pytest.approx(test_file_prop[filename]['fs'])
+        tot_sum += sum(signal['data'])
 
     # Total sum of the data should match between the original file and the imported
-    assert tot_sum == pytest.approx(TEST_FILE_PROP[filename]['total_sum'])
+    assert tot_sum == pytest.approx(test_file_prop[filename]['total_sum'])
 
 
 @pytest.mark.parametrize("filename", GOOD_TDMS_FILES)
 def test_compliance_sep005(filename):
+    """
+    Test the compliance with the SEP005 guidelines
+    """
     file_path = os.path.join(static_dir, 'good', filename)
     signals = read_tdms(file_path)  # should already not crash here
 
@@ -66,21 +72,21 @@ def test_import_faulty_tdms(filename):
 
     :return:
     """
-    import os.path
 
     file_path = os.path.join(static_dir, 'bad', filename)
     with pytest.warns(UserWarning, match=filename):
         signals = read_tdms(file_path)
 
-    assert signals == []
+    assert not signals
 
 
 def test_no_file_on_path():
     """
-    Test that a UserWarning is returned when an incorrect path is provided, and an empty signal list is returned
+    Test that a UserWarning is returned when an incorrect path is provided,
+     and an empty signal list is returned
     :return:
     """
     with pytest.warns(UserWarning):
         signals = read_tdms('dummy.tdms')
 
-    assert signals == []
+    assert not signals
