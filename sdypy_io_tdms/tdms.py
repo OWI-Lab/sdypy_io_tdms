@@ -45,7 +45,7 @@ def read_tdms(path):
         channels = tdms_file[group.name].channels()
         for channel in channels:
             signal = {}
-            signal['group'] = group
+            signal['group'] = group.name
             signal['name'] = str(channel).split("/")[2][1:-2]
             if "unit_string" in channel.properties:
                 unit_str = channel.properties["unit_string"]
@@ -54,10 +54,11 @@ def read_tdms(path):
             signal['unit_str'] = unit_str
             signal['data'] = tdms_file[group.name][channel.name].data
             signal['fs'] = 1 / channel.properties["wf_increment"]
-            signal['start_timestamp'] = np.datetime_as_string(
-                channel.properties["wf_start_time"],
-                unit='s'
-            )
+            if 'wf_start_time' in channel.properties:
+                signal['start_timestamp'] = np.datetime_as_string(
+                    channel.properties["wf_start_time"],
+                    unit='s'
+                )
             signals.append(signal)
 
     return signals

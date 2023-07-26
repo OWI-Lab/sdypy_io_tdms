@@ -21,9 +21,10 @@ def test_content(filename):
         'good_tdms_1.tdms': {
             'no_channels': 8,
             'total_sum': -15.59784792,  # Sum of all values inside the channels
-            'length': 18000,
-            'unit_str': 'g',
-            'fs': 30,
+            'length': [18000] * 8,
+            'group': ['acceleration'] * 8,
+            'unit_str': ['g'] * 8,
+            'fs': [30] * 8,
             'channel_names': [
                 'TP_ACC_LAT19_315deg_X',
                 'TP_ACC_LAT19_315deg_Y',
@@ -34,6 +35,41 @@ def test_content(filename):
                 'TW_ACC_LAT69_031deg_X',
                 'TW_ACC_LAT69_031deg_Y'
             ]
+        },
+        'good_tdms_2.tdms': {
+            'no_channels': 24,
+            'total_sum': 41137.14263 + 227876.64,  # Sum of all values inside the channels
+            'length': [15000] * 8 + [1] + [60] * 6 + [1] * 2 + [4] * 7,
+            'group': ['acceleration'] * 8 + ['ambient'] * 16,
+            'unit_str': ['g'] * 8 + ['C'] + ['Â°'] * 3 + ['m/s'] * 3 +
+                        ['hPa'] + ['%', 'mm', 'hits', 'sec', 'sec', 'hits/H', 'hits/H', 'V'],
+            'fs': [250] * 8 + [1 / 60] + [1] * 6 + [1 / 60] * 2 + [1 / 15] * 7,
+            'channel_names': [
+                'SCB_ALM_RS_ACC_HOR004_X_nr1',
+                'SCB_ALM_RS_ACC_HOR004_Z_nr3',
+                'SCB_ALM_RS_ACC_HOR008_X_nr1',
+                'SCB_ALM_RS_ACC_HOR008_Y_nr2',
+                'SCB_ALM_RS_ACC_HOR008_Z_nr3',
+                'SCB_ALM_RS_ACC_HOR012_X_nr1',
+                'SCB_ALM_RN_ACC_HOR012_Y_nr2',
+                'SCB_ALM_RN_ACC_HOR012_Z_nr3',
+                'temperature air',
+                'displacement min',
+                'displacement avg',
+                'displacement max',
+                'wind speed min',
+                'wind speed avg',
+                'wind speed max',
+                'pressure',
+                'humidity',
+                'precepitation rain',
+                'precepitation hail',
+                'duration rain',
+                'duration hail',
+                'intensity rain',
+                'intensity hail',
+                'voltage supply'
+            ]
         }
     }
     file_path = os.path.join(static_dir, 'good', filename)
@@ -42,11 +78,19 @@ def test_content(filename):
     assert len(signals) == test_file_prop[filename]['no_channels']
 
     tot_sum = 0
-    for signal, s_name in zip(signals, test_file_prop[filename]['channel_names']):
+    for signal, s_name, s_unit_str, s_len, s_fs, s_g in zip(
+            signals,
+            test_file_prop[filename]['channel_names'],
+            test_file_prop[filename]['unit_str'],
+            test_file_prop[filename]['length'],
+            test_file_prop[filename]['fs'],
+            test_file_prop[filename]['group']
+    ):
         assert signal['name'] == s_name
-        assert signal['unit_str'] == test_file_prop[filename]['unit_str']
-        assert len(signal['data']) == test_file_prop[filename]['length']
-        assert signal['fs'] == pytest.approx(test_file_prop[filename]['fs'])
+        assert signal['group'] == s_g
+        assert signal['unit_str'] == s_unit_str
+        assert len(signal['data']) == s_len
+        assert signal['fs'] == pytest.approx(s_fs)
         tot_sum += sum(signal['data'])
 
     # Total sum of the data should match between the original file and the imported
