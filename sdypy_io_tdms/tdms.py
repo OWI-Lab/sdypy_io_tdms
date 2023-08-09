@@ -1,8 +1,11 @@
+import copy
+import datetime
 import os
 import warnings
 
 import numpy as np
-from nptdms import TdmsFile
+from nptdms import TdmsFile, ChannelObject, GroupObject, RootObject, TdmsWriter
+from sdypy_sep005.sep005 import assert_sep005
 
 
 def read_tdms(path):
@@ -62,3 +65,46 @@ def read_tdms(path):
             signals.append(signal)
 
     return signals
+
+
+def write_tdms(signals, path, author='sdypy_io_tdms', timestamp=None):
+    """Write a SEP005 formatted object into a TDMS file
+    """
+    if timestamp is None:
+        for signal in signals:
+            if 'start_timestamp' in signal:
+                if isinstance(signal['start_timestamp'], datetime.datetime):
+                    timestamp = copy.copy(signal['start_timestamp'])
+                    signal['start_timestamp'] = str(signal['start_timestamp'])
+
+        if timestamp is None:
+            timestamp = datetime.datetime.utcnow()
+
+    # Check if SEP005 compliant
+    assert_sep005(signals)
+
+    root_object = RootObject(
+        properties={
+            "author": author,
+            "datestring": timestamp.strftime("%Y/%m/%d H:%M:%S"),
+        }
+    )
+
+    with TdmsWriter(path, "w") as tdms_writer:
+        tdms_writer.write_segment([root_object])
+        for signal in signals:
+            if signal['group'] is None:
+                raise ValueError(
+                    "signal.group attribute should not be None as it is required for a TDMS file"
+                )
+            group_object = GroupObject(signal['group'])
+            channel_object = ChannelObject(
+                signal['group'],
+                signal['name'],
+                np.array(signal['data'], dtype="float32"),
+                properties={
+                    "unit_string": signal['unit_str'],
+                    "wf_increment": 1 / signal['fs'],
+                },
+            )
+            tdms_writer.write_segment([group_object, channel_object])

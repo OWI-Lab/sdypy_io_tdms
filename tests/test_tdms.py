@@ -1,9 +1,12 @@
+import datetime
 import os
 
+import numpy as np
 import pytest
+from pytz import utc
 from sdypy_sep005.sep005 import assert_sep005
 
-from sdypy_io_tdms.tdms import read_tdms
+from sdypy_io_tdms.tdms import read_tdms, write_tdms
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 static_dir = os.path.join(current_dir, 'static')
@@ -134,3 +137,41 @@ def test_no_file_on_path():
         signals = read_tdms('dummy.tdms')
 
     assert not signals
+
+
+def test_write_tdms(tmp_path):
+    """
+    Test that checks to write a tdms file from a SEP005 compliant structure and then reads it again
+    """
+    signals = [
+        {
+            'name': 'test_01',
+            'group': 'acceleration',
+            'unit_str': 'm/s²',
+            'data': np.array([1, 2, 3, 4, 5, 4.12, 3, 2, 1]),
+            'fs': 2.50,
+            'start_timestamp': datetime.datetime(2023, 11, 15, 12, tzinfo=utc)
+        },
+        {
+            'name': 'test_02',
+            'group': 'strain',
+            'unit_str': 'microstrain',
+            'data': np.array([1, 2, 3, 4, 5.23, 4, 3, 2, 1]),
+            'fs': 1.0,
+            'start_timestamp': datetime.datetime(2023, 11, 15, 12, tzinfo=utc)
+        }
+    ]
+    temp_dir = tmp_path / 'write_tdms'
+    temp_dir.mkdir()
+    tdms_path = temp_dir / "write_test.tdms"
+    write_tdms(signals, tdms_path)
+    assert os.path.isfile(tdms_path)  # A file was created
+
+    signals_read = read_tdms(tdms_path)
+    assert len(signals) == 2
+    for signal_r, signal in zip(signals_read, signals):
+        assert signal_r['name'] == signal['name']
+        assert signal_r['fs'] == signal['fs']
+        assert signal_r['unit_str'] == signal['unit_str']
+        assert signal_r['group'] == signal['group']
+        assert np.allclose(signal_r['data'], signal['data'])
