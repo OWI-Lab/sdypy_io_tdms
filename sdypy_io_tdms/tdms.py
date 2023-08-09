@@ -47,9 +47,10 @@ def read_tdms(path):
     for group in groups:
         channels = tdms_file[group.name].channels()
         for channel in channels:
-            signal = {}
-            signal['group'] = group.name
-            signal['name'] = str(channel).split("/")[2][1:-2]
+            signal = {
+                'group': group.name,
+                'name': str(channel).split("/")[2][1:-2]
+            }
             if "unit_string" in channel.properties:
                 unit_str = channel.properties["unit_string"]
             else:
