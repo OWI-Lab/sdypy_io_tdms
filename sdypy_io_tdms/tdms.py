@@ -2,6 +2,7 @@ import copy
 import datetime
 import os
 import warnings
+from pathlib import Path
 from typing import Union
 
 import numpy as np
@@ -9,7 +10,7 @@ from nptdms import TdmsFile, ChannelObject, GroupObject, RootObject, TdmsWriter
 from sdypy_sep005.sep005 import assert_sep005
 
 
-def read_tdms(path: str) -> list:
+def read_tdms(path: Union[str, Path]) -> list:
     """Primary function to read tdms files based on the path.
 
     .. code-block:: python
@@ -69,7 +70,12 @@ def read_tdms(path: str) -> list:
     return signals
 
 
-def write_tdms(signals: Union[list, dict], path: str, author: str = 'sdypy_io_tdms', timestamp=None):
+def write_tdms(
+        signals: Union[list, dict],
+        path: Union[str, Path],
+        author: str = 'sdypy_io_tdms',
+        timestamp=None
+):
     """Write a SEP005 formatted object into a TDMS file
     """
     if not isinstance(signals, (list, tuple)):

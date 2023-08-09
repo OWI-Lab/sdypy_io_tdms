@@ -168,10 +168,17 @@ def test_write_tdms(tmp_path):
     assert os.path.isfile(tdms_path)  # A file was created
 
     signals_read = read_tdms(tdms_path)
-    assert len(signals) == 2
+    assert len(signals_read) == len(signals)
     for signal_r, signal in zip(signals_read, signals):
         assert signal_r['name'] == signal['name']
         assert signal_r['fs'] == signal['fs']
         assert signal_r['unit_str'] == signal['unit_str']
         assert signal_r['group'] == signal['group']
         assert np.allclose(signal_r['data'], signal['data'])
+
+    # Check it can also handle just a single instance
+    tdms_path = temp_dir / "write_test_single.tdms"
+    write_tdms(signals[0], tdms_path)
+    assert os.path.isfile(tdms_path)  # A file was created
+    signals_read = read_tdms(tdms_path)
+    assert len(signals_read) == 1
