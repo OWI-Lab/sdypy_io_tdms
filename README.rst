@@ -13,3 +13,7 @@ Using the package
 
         file_path = # Path to the tdms file of interest
         signals = read_tdms(file_path)
+
+Acknowledgements
+----------------
+This package was developed in the framework of the [Interreg Smart Circular Bridge project](https://vb.nweurope.eu/projects/project-search/smart-circular-bridge-scb-for-pedestrians-and-cyclists-in-a-circular-built-environment/)
