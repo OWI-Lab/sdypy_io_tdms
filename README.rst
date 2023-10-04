@@ -1,7 +1,7 @@
 SDyPy TDMS io
 -----------------------
 
-Basic package to import National Instruments .tdms files in a way complient with
+Basic package to import National Instruments .tdms files in a way compliant with
 SDyPy format for timeseries as proposed in SEP005.
 
 Using the package

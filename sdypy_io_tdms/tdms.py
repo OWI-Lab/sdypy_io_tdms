@@ -14,7 +14,7 @@ def read_tdms(path: Union[str, Path]) -> list:
     """Primary function to read tdms files based on the path.
 
     .. code-block:: python
-        signals = dw.readTDMS(path, location)
+        signals = dw.readTDMS(path)
 
     Returns an empty list when file failed
 
