@@ -94,7 +94,7 @@ def test_content(filename):
         assert signal['unit_str'] == s_unit_str
         assert len(signal['data']) == s_len
         assert signal['fs'] == pytest.approx(s_fs)
-        tot_sum += sum(signal['data'])
+        tot_sum += np.sum(signal['data'], dtype=np.float64)
 
     # Total sum of the data should match between the original file and the imported
     assert tot_sum == pytest.approx(test_file_prop[filename]['total_sum'])
