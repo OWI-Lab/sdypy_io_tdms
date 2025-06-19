@@ -1,3 +1,32 @@
 [build-system]
-requires = ["setuptools>=42", "wheel"]
+requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "sdypy_io_tdms"
+version = "0.1.2"  # You can hardcode or automate this
+description = "TDMS file read and write functions compliant with SDyPy SEP5"
+readme = "README.rst"
+requires-python = ">=3.6"
+license = { text = "MIT license" }
+authors = [
+    { name="Wout Weijtjens", email="wout.weijtjens@vub.be" },
+]
+maintainers = [
+    { name="Wout Weijtjens", email="wout.weijtjens@vub.be" },
+]
+keywords = ["io", "tdms", "SEP5"]
+dependencies = [
+    "numpy>=1.11.0",
+    "nptdms>=1.3.0",
+    "sdypy-sep005>=0.1.0",
+    "pytz"
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3.6"
+]
+
+[tool.setuptools]
+packages = ["sdypy_io_tdms"]
