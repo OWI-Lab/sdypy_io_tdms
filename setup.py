@@ -37,7 +37,7 @@ if __name__ == '__main__':
         maintainer_email='wout.weijtjens@vub.be',
         keywords=['io','tdms','SEP5'],
         packages=['sdypy_io_tdms'],
-        requires=[
+        install_requires=[
             "numpy>=1.11.0",
             "nptdms>=1.3.0",
             "sdypy-sep005>=0.1.0",
